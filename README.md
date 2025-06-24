@@ -1,4 +1,4 @@
-# ETS2 Profile Renamer (Linux)
+#     ETS2RenameLinux
 
 A simple Bash script to rename **Euro Truck Simulator 2** profiles on **Linux (Steam native)**.
 
