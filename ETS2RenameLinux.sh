@@ -4,8 +4,7 @@
 # Supports profiles in steam_profiles, steam_profiles(*).bak and profiles/
 
 DOCS_DIR="$HOME/.local/share/Euro Truck Simulator 2"
-SII_DECRYPT_URL="https://raw.githubusercontent.com/Cubixty/sii-decrypt/main/SII_Decrypt%20(any%20format).exe"
-SII_DECRYPT_EXE="./SII_Decrypt.exe"
+SII_DECODE="./sii-decode"
 
 # Search for all relevant profile directories
 PROFILE_DIRS=()
@@ -91,13 +90,6 @@ while true; do
     # Force save format to text
     sed -i 's/uset g_save_format ".*"/uset g_save_format "2"/' "$DOCS_DIR/config.cfg" 2>/dev/null
 
-    # Download decrypt tool if needed
-    if [[ ! -f "$SII_DECRYPT_EXE" ]]; then
-        echo "⬇️  Downloading SII_Decrypt.exe..."
-        wget "$SII_DECRYPT_URL" -O "$SII_DECRYPT_EXE"
-        chmod +x "$SII_DECRYPT_EXE"
-    fi
-
     # Find profile.sii in the profile folder
     PROFILE_SII_PATH="$PROFILE_DIR/profile.sii"
     if [[ ! -f "$PROFILE_SII_PATH" ]]; then
@@ -106,12 +98,15 @@ while true; do
         continue
     fi
 
-    # Decrypt it
-    echo "🔓 Decrypting profile..."
-    wine "$SII_DECRYPT_EXE" "$PROFILE_SII_PATH"
-
-    # Replace name inside
-    echo "✏️ Updating profile name inside profile.sii..."
+    # Rename profile.sii to profile.sii.bak (overwrite if existing)
+    mv -f "$PROFILE_DIR/profile.sii" "$PROFILE_DIR/profile.sii.bak"
+    
+    # Decrypt profile.sii.bak and save the result in profile.sii
+    echo "🔓 Decrypting profile and saving new file..."
+    $SII_DECODE "$PROFILE_DIR/profile.sii.bak" &> "$PROFILE_DIR/profile.sii"
+    
+    # Replace name inside profile.sii.bak
+    echo "✏️ Updating profile name..."
     sed -i "s/profile_name:.*/profile_name: \"$ren\"/" "$PROFILE_SII_PATH"
 
     # Rename the folder
