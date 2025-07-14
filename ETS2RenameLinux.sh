@@ -5,6 +5,7 @@
 
 DOCS_DIR="$HOME/.local/share/Euro Truck Simulator 2"
 SII_DECODE="./sii-decode"
+SII_DECODE_LINK="https://github.com/gabriele2000/ETS2RenameLinux/blob/aed3137332b9b24546be23b0fe908edbe2088611/sii-decode"
 
 # Search for all relevant profile directories
 PROFILE_DIRS=()
@@ -100,6 +101,13 @@ while true; do
 
     # Rename profile.sii to profile.sii.bak (overwrite if existing)
     mv -f "$PROFILE_DIR/profile.sii" "$PROFILE_DIR/profile.sii.bak"
+
+    # Download decode tool if needed
+    if [[ ! -f "$SII_DECODE" ]]; then
+        echo "⬇️  Downloading sii-decode..."
+        wget $SII_DECODE_LINK
+        chmod +x "$SII_DECODE"
+    fi
     
     # Decrypt profile.sii.bak and save the result in profile.sii
     echo "🔓 Decrypting profile and saving new file..."
